@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.13
 
 RUN mkdir /srv/metadataproxy
 COPY requirements.txt requirements_wsgi.txt /srv/metadataproxy/
