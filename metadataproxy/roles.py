@@ -68,7 +68,7 @@ def log_exec_time(method):
 def docker_client():
     global _docker_client
     if _docker_client is None:
-        _docker_client = docker.Client(base_url=app.config['DOCKER_URL'])
+        _docker_client = docker.DockerClient(base_url=app.config['DOCKER_URL'])
     return _docker_client
 
 
@@ -102,7 +102,7 @@ def find_container(ip):
         log.info('Container id for IP {0} in cache'.format(ip))
         try:
             with PrintingBlockTimer('Container inspect'):
-                container = client.inspect_container(container_id)
+                container = client.containers.get(container_id).attrs
             # Only return a cached container if it is running.
             if container['State']['Running']:
                 return container
@@ -126,12 +126,12 @@ def find_container(ip):
                 pass
 
     with PrintingBlockTimer('Container fetch'):
-        _ids = [c['Id'] for c in client.containers()]
+        _ids = [c.id for c in client.containers.list()]
 
     for _id in _ids:
         try:
             with PrintingBlockTimer('Container inspect'):
-                c = client.inspect_container(_id)
+                c = client.containers.get(_id).attrs
         except docker.errors.NotFound:
             log.error('Container id {0} not found'.format(_id))
             continue
