@@ -1,3 +1,11 @@
+## 2.4.0
+ 
+* Support passing through IMDSv2 requests
+ 
+## 2.3.0
+ 
+* Upgraded dependencies
+
 ## 2.2.0
 
 * Added `PATCH_ECS_ALLOWED_HOSTS` config setting, to support aws-vault's --ecs-server option
