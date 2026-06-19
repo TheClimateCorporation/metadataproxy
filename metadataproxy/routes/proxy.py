@@ -75,12 +75,18 @@ def iam_sts_credentials(api_version, requested_role):
     return jsonify(assumed_role)
 
 
-@app.route('/<path:url>')
+@app.route('/<path:url>', methods=["GET", "PUT"])
 @app.route('/')
 def passthrough(url=''):
     log.debug('Did not match credentials request url; passing through.')
-    req = requests.get(
+    headers = {}
+    for passback_header in ["X-aws-ec2-metadata-token", "X-aws-ec2-metadata-token-ttl-seconds"]:
+        if request.headers.get(passback_header):
+            headers[passback_header] = request.headers[passback_header]
+    req = requests.request(
+        request.method,
         '{0}/{1}'.format(app.config['METADATA_URL'], url),
+        headers=headers,
         stream=True
     )
     return Response(
